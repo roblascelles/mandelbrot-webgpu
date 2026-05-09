@@ -4,6 +4,7 @@ An interactive, GPU-accelerated Mandelbrot set viewer built with WebGPU.
 
 View at https://roblascelles.github.io/mandelbrot-webgpu/
 
+![Screen Grab](screen-grab.png)
 
 ## Controls
 
@@ -37,19 +38,6 @@ npm run dev
 3. Open your browser to the URL shown (typically `http://localhost:5173`)
 
 
-## Deploying to GitHub Pages
-
-1. Build the project:
-   ```bash
-   npm run deploy
-   ```
-
-2. Push the `dist` folder to the `gh-pages` branch:
-   ```bash
-   git add dist -f
-   git commit -m "Deploy to GitHub Pages"
-   git subtree push --prefix dist origin gh-pages
-   ```
 
 ## License
 
