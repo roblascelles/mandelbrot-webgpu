@@ -14,6 +14,13 @@ async function init() {
     const context = canvas.getContext('webgpu');
     const format = navigator.gpu.getPreferredCanvasFormat();
 
+    // Set canvas size to match window
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+
     context.configure({
         device: device,
         format: format,
@@ -32,7 +39,7 @@ async function init() {
     // Mandelbrot view parameters
     let centre = { x: -0.5, y: 0.0 };
     let zoom = 1.0;
-    const aspect_ratio = canvas.width / canvas.height;
+    let aspect_ratio = canvas.width / canvas.height;
 
     const pipeline = device.createRenderPipeline({
         layout: 'auto',
@@ -148,6 +155,13 @@ async function init() {
         centre.x = pointX - (mouseX * aspect_ratio) / zoom;
         centre.y = pointY - mouseY / zoom;
 
+        render();
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        aspect_ratio = canvas.width / canvas.height;
         render();
     });
 
