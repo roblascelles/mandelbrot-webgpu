@@ -1,4 +1,17 @@
-import shaderSource from './shader.wgsl?raw';
+import mandelbrotShader from './mandelbrot.wgsl?raw';
+import juliaShader from './julia.wgsl?raw';
+import burningShipShader from './burning-ship.wgsl?raw';
+import tricornShader from './tricorn.wgsl?raw';
+import multibrotShader from './multibrot.wgsl?raw';
+
+// Fractal configurations
+const fractals = [
+    { name: 'Mandelbrot', shader: mandelbrotShader, centre: { x: -0.5, y: 0.0 }, zoom: 1.0 },
+    { name: 'Julia Set', shader: juliaShader, centre: { x: 0.0, y: 0.0 }, zoom: 1.5 },
+    { name: 'Burning Ship', shader: burningShipShader, centre: { x: -0.5, y: -0.5 }, zoom: 0.7 },
+    { name: 'Tricorn', shader: tricornShader, centre: { x: -0.5, y: 0.0 }, zoom: 1.0 },
+    { name: 'Multibrot (z³)', shader: multibrotShader, centre: { x: 0.0, y: 0.0 }, zoom: 1.2 },
+];
 
 // main.js
 async function init() {
@@ -27,44 +40,73 @@ async function init() {
         alphaMode: 'premultiplied',
     });
 
-    const shaderModule = device.createShaderModule({ code: shaderSource });
-
-    // Create uniform buffer for Mandelbrot parameters
+    // Create uniform buffer for fractal parameters
     const uniformBufferSize = 4 * 4; // 2 floats (centre) + 1 float (zoom) + 1 float (aspect_ratio) = 16 bytes
     const uniformBuffer = device.createBuffer({
         size: uniformBufferSize,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
-    // Mandelbrot view parameters
-    let centre = { x: -0.5, y: 0.0 };
-    let zoom = 1.0;
+    // Current fractal state
+    let currentFractalIndex = 0;
+    let centre = { ...fractals[0].centre };
+    let zoom = fractals[0].zoom;
     let aspect_ratio = canvas.width / canvas.height;
 
-    const pipeline = device.createRenderPipeline({
-        layout: 'auto',
-        vertex: {
-            module: shaderModule,
-            entryPoint: 'vs_main',
-        },
-        fragment: {
-            module: shaderModule,
-            entryPoint: 'fs_main',
-            targets: [{ format: format }],
-        },
-        primitive: {
-            topology: 'triangle-list',
-        },
-    });
+    // Create UI indicator
+    const indicator = document.createElement('div');
+    indicator.style.position = 'fixed';
+    indicator.style.top = '20px';
+    indicator.style.left = '20px';
+    indicator.style.color = 'white';
+    indicator.style.fontFamily = 'monospace';
+    indicator.style.fontSize = '16px';
+    indicator.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    indicator.style.padding = '10px 15px';
+    indicator.style.borderRadius = '5px';
+    indicator.style.zIndex = '1000';
+    document.body.appendChild(indicator);
 
-    // Create bind group for uniforms
-    const bindGroup = device.createBindGroup({
-        layout: pipeline.getBindGroupLayout(0),
-        entries: [{
-            binding: 0,
-            resource: { buffer: uniformBuffer },
-        }],
-    });
+    function updateIndicator() {
+        indicator.textContent = `${currentFractalIndex + 1}. ${fractals[currentFractalIndex].name} | Press 1-5 to switch`;
+    }
+    updateIndicator();
+
+    // Create pipeline and bind group
+    let pipeline;
+    let bindGroup;
+
+    function createPipeline() {
+        const shaderModule = device.createShaderModule({ 
+            code: fractals[currentFractalIndex].shader 
+        });
+
+        pipeline = device.createRenderPipeline({
+            layout: 'auto',
+            vertex: {
+                module: shaderModule,
+                entryPoint: 'vs_main',
+            },
+            fragment: {
+                module: shaderModule,
+                entryPoint: 'fs_main',
+                targets: [{ format: format }],
+            },
+            primitive: {
+                topology: 'triangle-list',
+            },
+        });
+
+        bindGroup = device.createBindGroup({
+            layout: pipeline.getBindGroupLayout(0),
+            entries: [{
+                binding: 0,
+                resource: { buffer: uniformBuffer },
+            }],
+        });
+    }
+
+    createPipeline();
 
     // Render function
     function render() {
@@ -156,6 +198,23 @@ async function init() {
         centre.y = pointY - mouseY / zoom;
 
         render();
+    });
+
+    // Handle keyboard input to switch fractals
+    window.addEventListener('keydown', (e) => {
+        const key = parseInt(e.key);
+        if (key >= 1 && key <= fractals.length) {
+            currentFractalIndex = key - 1;
+            
+            // Reset view to fractal's default settings
+            centre = { ...fractals[currentFractalIndex].centre };
+            zoom = fractals[currentFractalIndex].zoom;
+            
+            // Recreate pipeline with new shader
+            createPipeline();
+            updateIndicator();
+            render();
+        }
     });
 
     // Handle window resize

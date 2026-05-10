@@ -1,4 +1,3 @@
-// vertex_shader.wgsl
 struct Uniforms {
     centre: vec2<f32>,
     zoom: f32,
@@ -53,9 +52,9 @@ fn hsv2rgb(h: f32, s: f32, v: f32) -> vec3<f32> {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
-    // Transform screen coordinates to complex plane using uniforms
-    let c = uniforms.centre + (in.worldPos * vec2<f32>(uniforms.aspect_ratio, 1.0)) / uniforms.zoom; 
-    var z = vec2<f32>(0.0, 0.0);
+    // Julia Set: z starts at the coordinate, c is fixed
+    let c = vec2<f32>(-0.7, 0.27015); // Classic Julia set parameter
+    var z = uniforms.centre + (in.worldPos * vec2<f32>(uniforms.aspect_ratio, 1.0)) / uniforms.zoom;
     var iter: i32 = 0;
     let max_iter: i32 = 256;
 
