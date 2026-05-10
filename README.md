@@ -4,7 +4,7 @@ An interactive, GPU-accelerated Mandelbrot set viewer built with WebGPU.
 
 View at https://roblascelles.github.io/mandelbrot-webgpu/
 
-![Screen Grab](screen-grab.png)
+[![Screen Grab](screen-grab.png)](https://roblascelles.github.io/mandelbrot-webgpu/)
 
 ## Controls
 
