@@ -23,6 +23,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for version calculation
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v1.1.1
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v1.1.1
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -35,6 +46,8 @@ jobs:
 
       - name: Build
         run: npm run deploy
+        env:
+          APP_VERSION: ${{ steps.gitversion.outputs.semVer }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

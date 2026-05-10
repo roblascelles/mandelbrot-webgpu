@@ -72,6 +72,22 @@ async function init() {
     }
     updateIndicator();
 
+    // Create version display in bottom-right
+    const versionDisplay = document.createElement('div');
+    versionDisplay.style.position = 'fixed';
+    versionDisplay.style.bottom = '20px';
+    versionDisplay.style.right = '20px';
+    versionDisplay.style.color = 'white';
+    versionDisplay.style.fontFamily = 'monospace';
+    versionDisplay.style.fontSize = '12px';
+    versionDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    versionDisplay.style.padding = '5px 10px';
+    versionDisplay.style.borderRadius = '3px';
+    versionDisplay.style.zIndex = '1000';
+    versionDisplay.style.opacity = '0.7';
+    versionDisplay.textContent = `v${__APP_VERSION__}`;
+    document.body.appendChild(versionDisplay);
+
     // Create pipeline and bind group
     let pipeline;
     let bindGroup;
