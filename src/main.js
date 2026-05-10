@@ -53,40 +53,15 @@ async function init() {
     let zoom = fractals[0].zoom;
     let aspect_ratio = canvas.width / canvas.height;
 
-    // Create UI indicator
-    const indicator = document.createElement('div');
-    indicator.style.position = 'fixed';
-    indicator.style.top = '20px';
-    indicator.style.left = '20px';
-    indicator.style.color = 'white';
-    indicator.style.fontFamily = 'monospace';
-    indicator.style.fontSize = '16px';
-    indicator.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    indicator.style.padding = '10px 15px';
-    indicator.style.borderRadius = '5px';
-    indicator.style.zIndex = '1000';
-    document.body.appendChild(indicator);
+    // Get UI elements
+    const indicator = document.getElementById('indicator');
+    const versionDisplay = document.getElementById('version-display');
 
     function updateIndicator() {
         indicator.textContent = `${currentFractalIndex + 1}. ${fractals[currentFractalIndex].name} | Press 1-5 to switch`;
     }
     updateIndicator();
-
-    // Create version display in bottom-right
-    const versionDisplay = document.createElement('div');
-    versionDisplay.style.position = 'fixed';
-    versionDisplay.style.bottom = '20px';
-    versionDisplay.style.right = '20px';
-    versionDisplay.style.color = 'white';
-    versionDisplay.style.fontFamily = 'monospace';
-    versionDisplay.style.fontSize = '12px';
-    versionDisplay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    versionDisplay.style.padding = '5px 10px';
-    versionDisplay.style.borderRadius = '3px';
-    versionDisplay.style.zIndex = '1000';
-    versionDisplay.style.opacity = '0.7';
     versionDisplay.textContent = `v${__APP_VERSION__}`;
-    document.body.appendChild(versionDisplay);
 
     // Create pipeline and bind group
     let pipeline;
